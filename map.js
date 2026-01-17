@@ -5,38 +5,79 @@ const form = document.querySelector("#filter-form");
 const resetButton = document.querySelector("#reset-button");
 const resultsCount = document.querySelector("#results-count");
 const cards = document.querySelector("#cards");
-const map = document.querySelector("#map");
+const mapContainer = document.querySelector("#map");
+const map = L.map(mapContainer).setView([41.8781, -87.6298], 11);
+const markersLayer = L.layerGroup().addTo(map);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
 
 const readFilters = () => {
   const data = new FormData(form);
   return Object.fromEntries(data.entries());
 };
 
-const renderMapMarkers = (filtered) => {
-  map.innerHTML = "";
-  const positions = [
-    { top: "20%", left: "30%" },
-    { top: "35%", left: "60%" },
-    { top: "50%", left: "40%" },
-    { top: "65%", left: "70%" },
-    { top: "30%", left: "75%" },
-    { top: "70%", left: "25%" },
-  ];
+const COORDS_KEY = "schoolCoords";
 
-  filtered.forEach((school, index) => {
-    const marker = document.createElement("div");
-    marker.className = "map-marker";
-    const position = positions[index % positions.length];
-    marker.style.top = position.top;
-    marker.style.left = position.left;
-    const label = document.createElement("span");
-    label.textContent = school.name;
-    marker.appendChild(label);
-    map.appendChild(marker);
-  });
+const getStoredCoords = () => {
+  const stored = localStorage.getItem(COORDS_KEY);
+  if (!stored) {
+    return {};
+  }
+  try {
+    return JSON.parse(stored);
+  } catch (error) {
+    return {};
+  }
 };
 
-const render = () => {
+const storeCoords = (coords) => {
+  localStorage.setItem(COORDS_KEY, JSON.stringify(coords));
+};
+
+const geocodeSchool = async (school) => {
+  const cached = getStoredCoords();
+  if (cached[school.id]) {
+    return cached[school.id];
+  }
+  if (school.latitude && school.longitude) {
+    return { lat: school.latitude, lon: school.longitude };
+  }
+  const response = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+      school.address
+    )}`
+  );
+  const results = await response.json();
+  if (!results.length) {
+    return null;
+  }
+  const coords = { lat: Number(results[0].lat), lon: Number(results[0].lon) };
+  cached[school.id] = coords;
+  storeCoords(cached);
+  return coords;
+};
+
+const renderMapMarkers = async (filtered) => {
+  markersLayer.clearLayers();
+  const bounds = [];
+  for (const school of filtered) {
+    const coords = await geocodeSchool(school);
+    if (!coords) {
+      continue;
+    }
+    const marker = L.marker([coords.lat, coords.lon]).addTo(markersLayer);
+    marker.bindPopup(`<strong>${school.name}</strong><br/>${school.address}`);
+    bounds.push([coords.lat, coords.lon]);
+  }
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  }
+};
+
+const render = async () => {
   const filters = readFilters();
   const filtered = applyFilters(schools, filters);
   cards.innerHTML = "";
@@ -46,7 +87,7 @@ const render = () => {
   resultsCount.textContent = `${filtered.length} school${
     filtered.length === 1 ? "" : "s"
   }`;
-  renderMapMarkers(filtered);
+  await renderMapMarkers(filtered);
 };
 
 form.addEventListener("submit", (event) => {

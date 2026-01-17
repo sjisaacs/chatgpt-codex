@@ -26,12 +26,43 @@ export const toggleFavorite = (id) => {
 };
 
 export const applyFilters = (schools, filters) => {
+  const nicheScale = [
+    "A+",
+    "A",
+    "A-",
+    "B+",
+    "B",
+    "B-",
+    "C+",
+    "C",
+    "C-",
+    "D+",
+    "D",
+    "D-",
+  ];
+  const nicheMinimum = filters.nicheRating
+    ? nicheScale.indexOf(filters.nicheRating)
+    : -1;
+
   return schools.filter((school) => {
     if (filters.distance && school.distanceMiles > Number(filters.distance)) {
       return false;
     }
-    if (filters.rating && school.rating < Number(filters.rating)) {
-      return false;
+    if (filters.greatSchoolsRating) {
+      if (
+        school.greatSchoolsRating === null ||
+        school.greatSchoolsRating < Number(filters.greatSchoolsRating)
+      ) {
+        return false;
+      }
+    }
+    if (filters.nicheRating) {
+      const schoolGradeIndex = school.nicheRating
+        ? nicheScale.indexOf(school.nicheRating)
+        : -1;
+      if (schoolGradeIndex === -1 || schoolGradeIndex > nicheMinimum) {
+        return false;
+      }
     }
     if (filters.startGrade === "preK" && !school.preK) {
       return false;
@@ -64,13 +95,18 @@ export const buildCard = (school) => {
   card.className = "school-card";
   card.setAttribute("data-school", school.id);
   card.setAttribute("tabindex", "0");
+  const greatSchoolsLabel =
+    school.greatSchoolsRating === null ? "N/A" : `${school.greatSchoolsRating}/10`;
   card.innerHTML = `
     <button class="favorite ${isFavorite(school.id) ? "active" : ""}" aria-label="Toggle favorite">
       ${isFavorite(school.id) ? "★" : "☆"}
     </button>
     <h3>${school.name}</h3>
-    <p>${school.neighborhood} · ${school.distanceMiles} miles away</p>
-    <p><strong>Rating:</strong> ${school.rating} / 10</p>
+    <p>${school.neighborhood}</p>
+    <div class="rating-row">
+      <span><strong>GreatSchools:</strong> ${greatSchoolsLabel}</span>
+      <span><strong>Niche:</strong> ${school.nicheRating ?? "N/A"}</span>
+    </div>
     <div class="tags">
       <span class="tag">${school.publicType}</span>
       <span class="tag">${school.selective ? "Selective" : "Open enrollment"}</span>
@@ -93,6 +129,14 @@ export const buildCard = (school) => {
         <div class="detail-block">
           <strong>Enrollment</strong>
           <div>${school.enrollment}</div>
+        </div>
+        <div class="detail-block">
+          <strong>Tuition</strong>
+          <div>${school.tuition}</div>
+        </div>
+        <div class="detail-block">
+          <strong>Student-teacher ratio</strong>
+          <div>${school.studentTeacherRatio}</div>
         </div>
       </div>
       <div class="detail-block" style="margin-top: 0.75rem;">

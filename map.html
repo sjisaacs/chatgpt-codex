@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Chicago School Finder | Map</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -44,12 +50,28 @@
               </select>
             </label>
             <label>
-              Minimum rating
-              <select name="rating">
-                <option value="">Any rating</option>
+              GreatSchools rating
+              <select name="greatSchoolsRating">
+                <option value="">Any</option>
+                <option value="6">6+</option>
                 <option value="7">7+</option>
                 <option value="8">8+</option>
                 <option value="9">9+</option>
+              </select>
+            </label>
+            <label>
+              Niche grade
+              <select name="nicheRating">
+                <option value="">Any</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="B-">B-</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="C-">C-</option>
               </select>
             </label>
             <label>
@@ -90,13 +112,13 @@
 
       <div class="results-meta">
         <span id="results-count">0 schools</span>
-        <span>Markers are placeholders until a map API is connected.</span>
+        <span>Map data uses OpenStreetMap tiles with Leaflet.</span>
       </div>
 
       <section class="map-layout">
         <div class="map-panel">
           <strong>Chicago map preview</strong>
-          <div id="map" class="map-canvas"></div>
+          <div id="map" class="map-canvas" role="application"></div>
         </div>
         <div>
           <section id="cards" class="card-grid" aria-live="polite"></section>
@@ -104,6 +126,11 @@
       </section>
     </main>
 
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
     <script type="module" src="map.js"></script>
   </body>
 </html>
