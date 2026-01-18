@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chicago School Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Chicago School Finder</h1>
+      <p>
+        Compare pre-K and elementary options across Chicago. Filter by distance, ratings,
+        admissions requirements, and application deadlines to build a shortlist that fits
+        your family.
+      </p>
+      <nav>
+        <a class="active" href="index.html">School List</a>
+        <a href="map.html">Map View</a>
+        <a href="favorites.html">Favorites</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="filters">
+        <h2>Filter schools</h2>
+        <form id="filter-form">
+          <div class="filter-grid">
+            <label>
+              Address (Chicago)
+              <input
+                type="text"
+                name="address"
+                placeholder="Enter your home address"
+              />
+            </label>
+            <label>
+              Max distance (miles)
+              <select name="distance">
+                <option value="">Any distance</option>
+                <option value="2">2 miles</option>
+                <option value="5">5 miles</option>
+                <option value="8">8 miles</option>
+                <option value="10">10 miles</option>
+              </select>
+            </label>
+            <label>
+              GreatSchools rating
+              <select name="greatSchoolsRating">
+                <option value="">Any</option>
+                <option value="6">6+</option>
+                <option value="7">7+</option>
+                <option value="8">8+</option>
+                <option value="9">9+</option>
+              </select>
+            </label>
+            <label>
+              Niche grade
+              <select name="nicheRating">
+                <option value="">Any</option>
+                <option value="A+">A+</option>
+                <option value="A">A</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B">B</option>
+                <option value="B-">B-</option>
+                <option value="C+">C+</option>
+                <option value="C">C</option>
+                <option value="C-">C-</option>
+              </select>
+            </label>
+            <label>
+              Starting grade
+              <select name="startGrade">
+                <option value="">All</option>
+                <option value="preK">Pre-K (age 4)</option>
+                <option value="kPlus">Elementary (age 5+)</option>
+              </select>
+            </label>
+            <label>
+              Public or private
+              <select name="publicType">
+                <option value="">All</option>
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+            </label>
+            <label>
+              Selective enrollment
+              <select name="selective">
+                <option value="">All</option>
+                <option value="true">Selective</option>
+                <option value="false">Open enrollment</option>
+              </select>
+            </label>
+            <label>
+              Apply by
+              <input type="date" name="deadline" />
+            </label>
+          </div>
+          <div class="filter-actions">
+            <button class="primary" type="submit">Apply filters</button>
+            <button class="ghost" type="button" id="reset-button">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <div class="results-meta">
+        <span id="results-count">0 schools</span>
+        <span>Tap a card to expand application details.</span>
+      </div>
+
+      <section id="cards" class="card-grid" aria-live="polite"></section>
+    </main>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
